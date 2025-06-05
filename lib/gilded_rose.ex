@@ -9,9 +9,9 @@ defmodule GildedRose do
   def update_quality(items), do: Enum.map(items, &update_item/1)
 
   # # "Aged Brie" actually increases in Quality the older it gets
-  def update_item(%Item{name: "Aged Brie", sell_in: sell_in, quality: quality} = item) do
+  def update_item(%Item{name: "Aged Brie", quality: quality} = item) do
     increment = degradation(item)
-    %{item | sell_in: sell_in - 1, quality: min(quality + increment, 50)}
+    set_quality(item, min(quality + increment, 50))
   end
 
   # "Sulfuras", being a legendary item, never has to be sold or decreases in Quality
@@ -31,27 +31,24 @@ defmodule GildedRose do
         true -> quality
       end
 
-    %{item | quality: quality, sell_in: sell_in - 1}
+    set_quality(item, quality)
   end
 
   # "Conjured" items degrade in Quality twice as fast as normal items
-  def update_item(%Item{name: "Conjured" <> _, quality: quality, sell_in: sell_in} = item) do
+  def update_item(%Item{name: "Conjured" <> _, quality: quality} = item) do
     degradation = degradation(item) * 2
-
-    %{
-      item
-      | quality: min(max(quality - degradation, 0), 50),
-        sell_in: sell_in - 1
-    }
+    set_quality(item, min(max(quality - degradation, 0), 50))
   end
 
   # Default behavior for all other items
-  def update_item(%Item{quality: quality, sell_in: sell_in} = item) do
+  def update_item(%Item{quality: quality} = item) do
     degradation = degradation(item)
-    quality = max(quality - degradation, 0)
-    %{item | quality: quality, sell_in: sell_in - 1}
+    set_quality(item, max(quality - degradation, 0))
   end
 
   defp degradation(%{sell_in: sell_in}) when sell_in <= 0, do: 2
   defp degradation(_), do: 1
+
+  defp set_quality(%{sell_in: sell_in} = item, quality),
+    do: %{item | sell_in: sell_in - 1, quality: quality}
 end
