@@ -10,7 +10,7 @@ defmodule GildedRose do
 
   # # "Aged Brie" actually increases in Quality the older it gets
   def update_item(%Item{name: "Aged Brie", sell_in: sell_in, quality: quality} = item) do
-    increment = if sell_in <= 0, do: 2, else: 1
+    increment = degradation(item)
     %{item | sell_in: sell_in - 1, quality: min(quality + increment, 50)}
   end
 
@@ -36,7 +36,7 @@ defmodule GildedRose do
 
   # "Conjured" items degrade in Quality twice as fast as normal items
   def update_item(%Item{name: "Conjured" <> _, quality: quality, sell_in: sell_in} = item) do
-    degradation = if sell_in <= 0, do: 4, else: 2
+    degradation = degradation(item) * 2
 
     %{
       item
@@ -47,8 +47,11 @@ defmodule GildedRose do
 
   # Default behavior for all other items
   def update_item(%Item{quality: quality, sell_in: sell_in} = item) do
-    degradation = if sell_in <= 0, do: 2, else: 1
+    degradation = degradation(item)
     quality = max(quality - degradation, 0)
     %{item | quality: quality, sell_in: sell_in - 1}
   end
+
+  defp degradation(%{sell_in: sell_in}) when sell_in <= 0, do: 2
+  defp degradation(_), do: 1
 end
