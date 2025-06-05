@@ -2,7 +2,7 @@
 
 Exercise baseline taken from [GildedRose-Refactoring-Kata](https://github.com/emilybache/GildedRose-Refactoring-Kata/tree/main/elixir).
 
-I'm managing system dependencies with [Nix](https://nixos.org/) via [devenv](). 
+I'm managing system dependencies with [Nix](https://nixos.org/) via [devenv](https://devenv.sh/). 
 
 If you don't have Nix installed, or just don't want to install Nix, make sure Elixir is installed and working on your machine and run the tests with `mix test`.
 
